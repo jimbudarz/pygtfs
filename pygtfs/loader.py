@@ -20,7 +20,6 @@ def list_feeds(schedule):
 
 
 def delete_feed(schedule, feed_filename, interactive=False):
-
     feed_name = feed.derive_feed_name(feed_filename)
     feeds_with_name = schedule.session.query(Feed).filter(Feed.feed_name == feed_name).all()
     delete_all = not interactive
@@ -46,7 +45,6 @@ def overwrite_feed(schedule, feed_filename, *args, **kwargs):
 
 def append_feed(schedule, feed_filename, strip_fields=True,
                 chunk_size=5000, agency_id_override=None, ignore_failures=True):
-
     fd = feed.Feed(feed_filename, strip_fields)
 
     gtfs_tables = {}
@@ -104,32 +102,32 @@ def append_feed(schedule, feed_filename, strip_fields=True,
     if Translation in gtfs_tables:
         print('Mapping translations to stops')
         q = (schedule.session.query(
-                Stop.feed_id.label('stop_feed_id'),
-                Translation.feed_id.label('translation_feed_id'),
-                Stop.stop_id.label('stop_id'),
-                Translation.trans_id.label('trans_id'),
-                Translation.lang.label('lang'))
-            .filter(Stop.feed_id==feed_id)
-            .filter(Translation.feed_id==feed_id)
-            .filter(Stop.stop_name==Translation.trans_id)
-            )
+            Stop.feed_id.label('stop_feed_id'),
+            Translation.feed_id.label('translation_feed_id'),
+            Stop.stop_id.label('stop_id'),
+            Translation.trans_id.label('trans_id'),
+            Translation.lang.label('lang'))
+             .filter(Stop.feed_id == feed_id)
+             .filter(Translation.feed_id == feed_id)
+             .filter(Stop.stop_name == Translation.trans_id)
+             )
         upd = _stop_translations.insert().from_select(
-                ['stop_feed_id', 'translation_feed_id', 'stop_id', 'trans_id', 'lang'], q)
+            ['stop_feed_id', 'translation_feed_id', 'stop_id', 'trans_id', 'lang'], q)
         schedule.session.execute(upd)
     if ShapePoint in gtfs_tables:
         print('Mapping shapes to trips')
         q = (schedule.session.query(
-                Trip.feed_id.label('trip_feed_id'),
-                ShapePoint.feed_id.label('shape_feed_id'),
-                Trip.trip_id.label('trip_id'),
-                ShapePoint.shape_id.label('shape_id'),
-                ShapePoint.shape_pt_sequence.label('shape_pt_sequence'))
-            .filter(Trip.feed_id==feed_id)
-            .filter(ShapePoint.feed_id==feed_id)
-            .filter(ShapePoint.shape_id==Trip.shape_id)
-            )
+            Trip.feed_id.label('trip_feed_id'),
+            ShapePoint.feed_id.label('shape_feed_id'),
+            Trip.trip_id.label('trip_id'),
+            ShapePoint.shape_id.label('shape_id'),
+            ShapePoint.shape_pt_sequence.label('shape_pt_sequence'))
+             .filter(Trip.feed_id == feed_id)
+             .filter(ShapePoint.feed_id == feed_id)
+             .filter(ShapePoint.shape_id == Trip.shape_id)
+             )
         upd = _trip_shapes.insert().from_select(
-                ['trip_feed_id', 'shape_feed_id', 'trip_id', 'shape_id', 'shape_pt_sequence'], q)
+            ['trip_feed_id', 'shape_feed_id', 'trip_id', 'shape_id', 'shape_pt_sequence'], q)
         schedule.session.execute(upd)
     schedule.session.commit()
 

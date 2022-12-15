@@ -21,7 +21,7 @@ class Schedule:
     addition, if they are related to another table, this can also be accessed
     by attribute.
 
-    :param db_conection: Either a sqlalchemy database url or a filename to be used with sqlite.
+    :param db_connection: Either a sqlalchemy database url or a filename to be used with sqlite.
 
     """
 
@@ -39,7 +39,7 @@ class Schedule:
 
     def drop_feed(self, feed_id):
         """ Delete a feed from a database by feed id"""
-        # the following does not cascade unfortunatly.
+        # the following does not cascade unfortunately.
         # self.session.query(Feed).filter(Feed.feed_id == feed_id).delete()
         feed = self.session.query(Feed).get(feed_id)
         self.session.delete(feed)
@@ -60,6 +60,7 @@ def _meta_query_by_id(entity, docstring=None):
     def _query_by_id(self, id):
         """ A function that returns a list of entries with matching ids """
         return self.session.query(entity).filter(entity.id == id).all()
+
     if docstring is not None:
         _query_by_id.__doc__ = docstring
     return _query_by_id
@@ -88,4 +89,4 @@ for entity in (gtfs_all + [Feed]):
     setattr(Schedule, entity._plural_name_ + "_query",
             _meta_query_raw(entity, entity_raw_doc))
     if hasattr(entity, 'id'):
-        setattr(Schedule, entity._plural_name_ + "_by_id", _meta_query_by_id(entity, entity_by_id_doc))    
+        setattr(Schedule, entity._plural_name_ + "_by_id", _meta_query_by_id(entity, entity_by_id_doc))

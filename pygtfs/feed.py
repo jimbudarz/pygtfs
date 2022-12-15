@@ -1,10 +1,9 @@
 from __future__ import (division, absolute_import, print_function,
                         unicode_literals)
 
-import os
-import io
 import csv
-
+import io
+import os
 from collections import namedtuple
 from zipfile import ZipFile
 
@@ -42,14 +41,13 @@ class CSV(object):
         n = tuple(six.next(self.rows))
         if n:
             return self.Tuple._make(self._pick_columns(n))
+
     next = __next__  # python 2 compatible
 
     def _pick_columns(self, row):
         if self.cols:
             return (row[x] for x in self.cols)
         return row
-
-
 
 
 class Feed(object):

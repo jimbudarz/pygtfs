@@ -34,7 +34,6 @@ Description:
   The database file can later be used to create a `pygtfs.Schedule` instance.
 """
 
-
 from __future__ import (division, absolute_import, print_function,
                         unicode_literals)
 
@@ -62,6 +61,7 @@ def main():
                        chunk_size=int(args['--chunk-size']))
     elif args['list']:
         list_feeds(schedule)
+
 
 if __name__ == '__main__':
     main()
