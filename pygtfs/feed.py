@@ -4,7 +4,6 @@ from __future__ import (division, absolute_import, print_function,
 import csv
 import io
 import os
-from _typeshed import SupportsNext
 from collections import namedtuple
 from typing import Iterable
 from zipfile import ZipFile
@@ -20,7 +19,7 @@ class CSV(object):
     """A CSV file."""
 
     def __init__(self, 
-                 rows: SupportsNext, 
+                 rows,
                  feedtype: str = 'CSVTuple', 
                  columns: Iterable = None,
                  ):
