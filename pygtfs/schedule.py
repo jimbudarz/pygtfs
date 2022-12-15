@@ -1,10 +1,13 @@
 from __future__ import (division, absolute_import, print_function,
                         unicode_literals)
 
+from typing import Optional, Union
+
 import sqlalchemy
 import sqlalchemy.orm
 
-from .gtfs_entities import gtfs_all, Feed, Base
+from .gtfs_entities import gtfs_all, Feed, Base, Agency, Stop, Transfer, Route, Fare, FareRule, ShapePoint, Service, \
+    ServiceException, Trip
 
 
 class Schedule:
@@ -25,7 +28,7 @@ class Schedule:
 
     """
 
-    def __init__(self, db_connection):
+    def __init__(self, db_connection: str):
         self.db_connection = db_connection
         self.db_filename = None
         if '://' not in db_connection:
@@ -46,7 +49,7 @@ class Schedule:
         self.session.commit()
 
 
-def _meta_query_all(entity, docstring=None):
+def _meta_query_all(entity, docstring: Optional[str] = None):
     def _query_all(instance_self):
         """ A list generated on access """
         return instance_self.session.query(entity).all()
@@ -56,7 +59,8 @@ def _meta_query_all(entity, docstring=None):
     return property(_query_all)
 
 
-def _meta_query_by_id(entity, docstring=None):
+def _meta_query_by_id(entity: Union[Agency, Stop, Transfer, Route, Fare, FareRule, ShapePoint, Service, ServiceException, Trip],
+                      docstring=None):
     def _query_by_id(self, id):
         """ A function that returns a list of entries with matching ids """
         return self.session.query(entity).filter(entity.id == id).all()
@@ -66,7 +70,8 @@ def _meta_query_by_id(entity, docstring=None):
     return _query_by_id
 
 
-def _meta_query_raw(entity, docstring=None):
+def _meta_query_raw(entity: Union[Agency, Stop, Transfer, Route, Fare, FareRule, ShapePoint, Service, ServiceException, Trip],
+                    docstring=None):
     def _query_raw(instance_self):
         """
             A raw sqlalchemy query object that the user can then manipulate

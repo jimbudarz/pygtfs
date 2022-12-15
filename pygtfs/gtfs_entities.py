@@ -64,7 +64,7 @@ def _validate_int_choice(int_choice, *field_names):
     @validates(*field_names)
     def in_range(self, key, value):
         if value is None or value == "":
-            if (None in int_choice):
+            if None in int_choice:
                 return None
             else:
                 raise PygtfsValidationError("Empty value not allowed in {0}".format(key))
@@ -198,7 +198,7 @@ class Route(Base):
     route_text_color = Column(Unicode, nullable=True)
 
     __table_args__ = (
-        ForeignKeyConstraint([feed_id, agency_id], [Agency.feed_id, Agency.agency_id]),
+        ForeignKeyConstraint((feed_id, agency_id), [Agency.feed_id, Agency.agency_id]),
     )
 
     agency = relationship(Agency, backref="routes",
@@ -280,13 +280,20 @@ class Service(Base):
 
     def __repr__(self):
         dayofweek = ''
-        if self.monday: dayofweek += 'M'
-        if self.tuesday: dayofweek += 'T'
-        if self.wednesday: dayofweek += 'W'
-        if self.thursday: dayofweek += 'Th'
-        if self.friday: dayofweek += 'F'
-        if self.saturday: dayofweek += 'S'
-        if self.sunday: dayofweek += 'Su'
+        if self.monday:
+            dayofweek += 'M'
+        if self.tuesday:
+            dayofweek += 'T'
+        if self.wednesday:
+            dayofweek += 'W'
+        if self.thursday:
+            dayofweek += 'Th'
+        if self.friday:
+            dayofweek += 'F'
+        if self.saturday:
+            dayofweek += 'S'
+        if self.sunday:
+            dayofweek += 'Su'
         return '<Service %s (%s)>' % (self.service_id, dayofweek)
 
 
@@ -323,8 +330,8 @@ class Trip(Base):
     bikes_allowed = Column(Integer, nullable=True)
 
     __table_args__ = (
-        ForeignKeyConstraint([feed_id, route_id], [Route.feed_id, Route.route_id]),
-        ForeignKeyConstraint([feed_id, service_id], [Service.feed_id, Service.service_id]),
+        ForeignKeyConstraint((feed_id, route_id), [Route.feed_id, Route.route_id]),
+        ForeignKeyConstraint((feed_id, service_id), [Service.feed_id, Service.service_id]),
         Index('idx_trips_shape_id', feed_id, shape_id),
     )
 
@@ -381,8 +388,8 @@ class StopTime(Base):
     timepoint = Column(Integer, nullable=True)
 
     __table_args__ = (
-        ForeignKeyConstraint([feed_id, stop_id], [Stop.feed_id, Stop.stop_id]),
-        ForeignKeyConstraint([feed_id, trip_id], [Trip.feed_id, Trip.trip_id]),
+        ForeignKeyConstraint((feed_id, stop_id), [Stop.feed_id, Stop.stop_id]),
+        ForeignKeyConstraint((feed_id, trip_id), [Trip.feed_id, Trip.trip_id]),
     )
 
     stop = relationship(Stop, backref='stop_times',
@@ -440,7 +447,7 @@ class FareRule(Base):
     contains_id = Column(Unicode, nullable=True)
 
     __table_args__ = (
-        ForeignKeyConstraint([feed_id, route_id], [Route.feed_id, Route.route_id]),
+        ForeignKeyConstraint((feed_id, route_id), [Route.feed_id, Route.route_id]),
     )
 
     route = relationship(Route, backref="fare_rules",
@@ -466,7 +473,7 @@ class Frequency(Base):
     exact_times = Column(Integer, nullable=True)
 
     __table_args__ = (
-        ForeignKeyConstraint([feed_id, trip_id], [Trip.feed_id, Trip.trip_id]),
+        ForeignKeyConstraint((feed_id, trip_id), [Trip.feed_id, Trip.trip_id]),
     )
 
     trip = relationship(Trip, backref="frequencies",
@@ -496,8 +503,8 @@ class Transfer(Base):
     min_transfer_time = Column(Integer, nullable=True)
 
     __table_args__ = (
-        ForeignKeyConstraint([feed_id, from_stop_id], [Stop.feed_id, Stop.stop_id]),
-        ForeignKeyConstraint([feed_id, to_stop_id], [Stop.feed_id, Stop.stop_id]),
+        ForeignKeyConstraint((feed_id, from_stop_id), [Stop.feed_id, Stop.stop_id]),
+        ForeignKeyConstraint((feed_id, to_stop_id), [Stop.feed_id, Stop.stop_id]),
     )
 
     stop_to = relationship(Stop, backref="transfers_to",
@@ -554,8 +561,8 @@ _stop_translations = Table(
     Column('stop_id', Unicode),
     Column('trans_id', Unicode),
     Column('lang', Unicode),
-    ForeignKeyConstraint(['stop_feed_id', 'stop_id'], [Stop.feed_id, Stop.stop_id]),
-    ForeignKeyConstraint(['translation_feed_id', 'trans_id', 'lang'],
+    ForeignKeyConstraint(('stop_feed_id', 'stop_id'), [Stop.feed_id, Stop.stop_id]),
+    ForeignKeyConstraint(('translation_feed_id', 'trans_id', 'lang'),
                          [Translation.feed_id, Translation.trans_id, Translation.lang]),
 )
 
@@ -566,8 +573,8 @@ _trip_shapes = Table(
     Column('trip_id', Unicode),
     Column('shape_id', Unicode),
     Column('shape_pt_sequence', Integer),
-    ForeignKeyConstraint(['trip_feed_id', 'trip_id'], [Trip.feed_id, Trip.trip_id]),
-    ForeignKeyConstraint(['shape_feed_id', 'shape_id', 'shape_pt_sequence'],
+    ForeignKeyConstraint(('trip_feed_id', 'trip_id'), [Trip.feed_id, Trip.trip_id]),
+    ForeignKeyConstraint(('shape_feed_id', 'shape_id', 'shape_pt_sequence'),
                          [ShapePoint.feed_id, ShapePoint.shape_id, ShapePoint.shape_pt_sequence]),
 )
 

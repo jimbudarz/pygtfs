@@ -6,20 +6,23 @@ from datetime import date
 
 import six
 
-from . import feed
+from . import feed, Schedule
 from .exceptions import PygtfsException
 from .gtfs_entities import (Feed, gtfs_required,
                             Translation, Stop, Trip, ShapePoint, _stop_translations,
                             _trip_shapes, gtfs_calendar, gtfs_all)
 
 
-def list_feeds(schedule):
+def list_feeds(schedule: Schedule):
     for (i, a_feed) in enumerate(schedule.feeds):
         print("{0}. id {1.feed_id}, name {1.feed_name}, "
               "loaded on {1.feed_append_date}".format(i, a_feed))
 
 
-def delete_feed(schedule, feed_filename, interactive=False):
+def delete_feed(schedule: Schedule,
+                feed_filename,
+                interactive: bool = False,
+                ):
     feed_name = feed.derive_feed_name(feed_filename)
     feeds_with_name = schedule.session.query(Feed).filter(Feed.feed_name == feed_name).all()
     delete_all = not interactive

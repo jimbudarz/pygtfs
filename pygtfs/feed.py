@@ -4,7 +4,9 @@ from __future__ import (division, absolute_import, print_function,
 import csv
 import io
 import os
+from _typeshed import SupportsNext
 from collections import namedtuple
+from typing import Iterable
 from zipfile import ZipFile
 
 import six
@@ -17,7 +19,11 @@ def _row_stripper(row):
 class CSV(object):
     """A CSV file."""
 
-    def __init__(self, rows, feedtype='CSVTuple', columns=None):
+    def __init__(self, 
+                 rows: SupportsNext, 
+                 feedtype: str = 'CSVTuple', 
+                 columns: Iterable = None,
+                 ):
         header = list(six.next(rows))
         # deal with annoying unnecessary boms on utf-8
         header[0] = header[0].lstrip("\ufeff")
@@ -44,7 +50,7 @@ class CSV(object):
 
     next = __next__  # python 2 compatible
 
-    def _pick_columns(self, row):
+    def _pick_columns(self, row: tuple):
         if self.cols:
             return (row[x] for x in self.cols)
         return row
@@ -54,7 +60,10 @@ class Feed(object):
     """A collection of CSV files with headers, either zipped into an archive
     or loose in a folder."""
 
-    def __init__(self, filename, strip_fields=True):
+    def __init__(self, 
+                 filename: str, 
+                 strip_fields: bool = True,
+                 ):
         self.filename = filename
         self.feed_name = derive_feed_name(filename)
         self.zf = None
@@ -70,7 +79,7 @@ class Feed(object):
     def __repr__(self):
         return '<Feed %s>' % self.filename
 
-    def python2_reader(self, filename):
+    def python2_reader(self, filename: str):
         if self.zf:
             try:
                 binary_file_handle = self.zf.open(filename, 'rU')
@@ -83,7 +92,7 @@ class Feed(object):
         for row in reader:
             yield [six.text_type(x, 'utf-8') for x in row]
 
-    def python3_reader(self, filename):
+    def python3_reader(self, filename: str):
         if self.zf:
             try:
                 text_file_handle = io.TextIOWrapper(
@@ -95,7 +104,10 @@ class Feed(object):
                                     encoding="utf-8")
         return csv.reader(text_file_handle)
 
-    def read_table(self, filename, columns):
+    def read_table(self, 
+                   filename: str, 
+                   columns,
+                   ) -> CSV:
         if self.strip_fields:
             rows = (_row_stripper(row) for row in self.reader(filename))
         else:
@@ -108,5 +120,10 @@ class Feed(object):
         return CSV(feedtype=feedtype, rows=rows, columns=columns)
 
 
-def derive_feed_name(filename):
+def derive_feed_name(filename: str) -> str:
+    """
+
+    :param filename:
+    :return:
+    """
     return os.path.basename(filename.rstrip('/'))

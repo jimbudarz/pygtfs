@@ -43,9 +43,10 @@ class TestSchedule(unittest.TestCase):
 
     def test_trip_stop_times(self):
         self.assertEqual([(st.arrival_time if st.arrival_time else None,
-                           st.departure_time if st.departure_time else None) for st in self.schedule.routes[0].trips[0].stop_times],
-                        [(datetime.timedelta(0, 28800), datetime.timedelta(0, 28800)),
-                         (datetime.timedelta(0, 29400), datetime.timedelta(0, 29700))])
+                           st.departure_time if st.departure_time else None) for st in
+                          self.schedule.routes[0].trips[0].stop_times],
+                         [(datetime.timedelta(0, 28800), datetime.timedelta(0, 28800)),
+                          (datetime.timedelta(0, 29400), datetime.timedelta(0, 29700))])
 
     def test_service_trips(self):
         self.assertEqual([tr.trip_id for tr in self.schedule.services[1].trips],
@@ -78,7 +79,8 @@ class TestSchedule(unittest.TestCase):
             (0, 'BEATTY_AIRPORT', '', ''),
             (3, 'BEATTY_AIRPORT', '', 'AAMV4'),
             (1, 'BEATTY_AIRPORT', 'STBA', ''),
-        ], [(tr.transfer_type, tr.to_stop_id, tr.to_route_id, tr.to_trip_id) for tr in self.schedule.stops[1].transfers_to])
+        ], [(tr.transfer_type, tr.to_stop_id, tr.to_route_id, tr.to_trip_id) for tr in
+            self.schedule.stops[1].transfers_to])
 
     def test_transfers_route_to_route(self):
         self.assertEqual(1, len(self.schedule.agencies[0].routes[0].transfers_from))
@@ -112,7 +114,7 @@ class TestSchedule(unittest.TestCase):
         with self.assertRaises(ValueError):
             t.bikes_allowed = -1
         self.assertEqual(t.bikes_allowed, 2)
-    
+
     def test_query_methods(self):
         """
             Test that the object query getters return
